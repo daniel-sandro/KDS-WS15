@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
 ENTITY hex4x7seg IS
-   GENERIC(RSTDEF: std_logic := '0');
+   GENERIC(RSTDEF:  std_logic := '0');
    PORT(rst:   IN  std_logic;                       -- reset,           active RSTDEF
         clk:   IN  std_logic;                       -- clock,           rising edge
         en:    IN  std_logic;                       -- enable,          active high
@@ -16,10 +16,10 @@ ENTITY hex4x7seg IS
 END hex4x7seg;
 
 ARCHITECTURE struktur OF hex4x7seg IS
-  SIGNAL cnt_1 integer RANGE 0 TO 213;
+  SIGNAL cnt_1: integer RANGE 0 TO 213;
   SIGNAL cnt_2: integer RANGE 0 TO 3;
   SIGNAL mod_4_counter_2_enable: std_logic;
-  SIGNAL 7_4_decoder_5_input: std_logic_vector(3 DOWNTO 0);
+  SIGNAL dec_5_input: std_logic_vector(3 DOWNTO 0);
 BEGIN
 
   freq_divider_1: PROCESS(clk)
@@ -27,39 +27,43 @@ BEGIN
     IF clk'event AND clk = '1' THEN
       cnt_1 <= (cnt_1 + 1) MOD 214;
     END IF;
-    mod_4_counter_2_enable = 1 WHEN cnt_1 = 0 ELSE 0;
-  END;
+    IF cnt_1 = 0 THEN
+      mod_4_counter_2_enable <= '1';
+    ELSE
+      mod_4_counter_2_enable <= '0';
+    END IF;
+  END PROCESS;
 
-  mod_4_counter_2 PROCESS(clk, mod_4_counter_2_enable)
+  mod_4_counter_2: PROCESS(clk, mod_4_counter_2_enable)
   BEGIN
     IF clk'event AND clk = '1' AND mod_4_counter_2_enable = '1' THEN
       cnt_2 <= (cnt_2 + 1) MOD 4;
     END IF;
-  END;
+  END PROCESS;
 
-  1_4_decoder_3 PROCESS(count)
+  dec_3: PROCESS(cnt_2)
   BEGIN
-    CASE count IS
-      WHEN "00" => an <= "1000";
-      WHEN "01" => an <= "0100";
-      WHEN "10" => an <= "0010";
-      WHEN "11" => an <= "0001";
+    CASE cnt_2 IS
+      WHEN 0 => an <= "1000";
+      WHEN 1 => an <= "0100";
+      WHEN 2 => an <= "0010";
+      WHEN 3 => an <= "0001";
     END CASE;
-  END;
+  END PROCESS;
 
-  1_4_multiplexer_4: PROCESS(count)
+  mux_4: PROCESS(cnt_2)
   BEGIN
-    CASE count IS
-      WHEN "00" => 7_4_decoder_5_input <= data(15 DOWNTO 12);
-      WHEN "01" => 7_4_decoder_5_input <= data(11 DOWNTO 8 );
-      WHEN "10" => 7_4_decoder_5_input <= data( 7 DOWNTO 4 );
-      WHEN "11" => 7_4_decoder_5_input <= data( 3 DOWNTO 0 );
+    CASE cnt_2 IS
+      WHEN 0 => dec_5_input <= data(15 DOWNTO 12);
+      WHEN 1 => dec_5_input <= data(11 DOWNTO 8 );
+      WHEN 2 => dec_5_input <= data( 7 DOWNTO 4 );
+      WHEN 3 => dec_5_input <= data( 3 DOWNTO 0 );
     END CASE;
-  END;
+  END PROCESS;
 
-  7_4_decoder_5: PROCESS(7_4_decoder_5_input)
+  dec_5: PROCESS(dec_5_input)
   BEGIN
-    CASE 7_4_decoder_5_input IS
+    CASE dec_5_input IS
       WHEN "0000" => seg <= "1111110";
       WHEN "0001" => seg <= "0110000";
       WHEN "0010" => seg <= "1101101";
@@ -76,17 +80,18 @@ BEGIN
       WHEN "1101" => seg <= "0111101";
       WHEN "1110" => seg <= "1001111";
       WHEN "1111" => seg <= "1000111";
+      WHEN OTHERS => seg <= "XXXXXXX";
     END CASE;
-  END;
+  END PROCESS;
 
-  1_4_multiplexer_6: PROCESS(count)
+  mux_6: PROCESS(cnt_2)
   BEGIN
-    CASE count IS
-      WHEN "00" => dp <= dpin(3);
-      WHEN "01" => dp <= dpin(2);
-      WHEN "10" => dp <= dpin(1);
-      WHEN "11" => dp <= dpin(0);
+    CASE cnt_2 IS
+      WHEN 0 => dp <= dpin(3);
+      WHEN 1 => dp <= dpin(2);
+      WHEN 2 => dp <= dpin(1);
+      WHEN 3 => dp <= dpin(0);
     END CASE;
-  END;
+  END PROCESS;
 
 END struktur;
