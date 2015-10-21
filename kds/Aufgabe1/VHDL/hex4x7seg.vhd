@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
 ENTITY hex4x7seg IS
-   GENERIC(RSTDEF:  std_logic := '0');
+   GENERIC(RSTDEF: std_logic := '0');
    PORT(rst:   IN  std_logic;                       -- reset,           active RSTDEF
         clk:   IN  std_logic;                       -- clock,           rising edge
         en:    IN  std_logic;                       -- enable,          active high
