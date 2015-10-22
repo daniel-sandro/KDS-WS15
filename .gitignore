@@ -11,6 +11,7 @@
 *.jpg
 *.html
 *.bsf
+*.bit
 
 # ignore simulation output of ModelSim
 wlf*
@@ -21,3 +22,6 @@ cov*/
 transcript*
 sc_dpiheader.h
 vsim.dbg
+
+# ignore backup files
+*.bak
