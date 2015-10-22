@@ -22,9 +22,11 @@ ARCHITECTURE struktur OF hex4x7seg IS
   SIGNAL dec_5_input: std_logic_vector(3 DOWNTO 0);
 BEGIN
 
-  freq_divider_1: PROCESS(clk)
+  freq_divider_1: PROCESS(clk, rst)
   BEGIN
-    IF clk'event AND clk = '1' THEN
+  	IF rst = '1' THEN
+  	  cnt_1 <= 0;
+    ELSIF clk'event AND clk = '1' THEN
       cnt_1 <= (cnt_1 + 1) MOD 214;
     END IF;
     IF cnt_1 = 0 THEN
@@ -34,21 +36,27 @@ BEGIN
     END IF;
   END PROCESS;
 
-  mod_4_counter_2: PROCESS(clk, mod_4_counter_2_enable)
+  mod_4_counter_2: PROCESS(clk, rst, mod_4_counter_2_enable)
   BEGIN
-    IF clk'event AND clk = '1' AND mod_4_counter_2_enable = '1' THEN
+  	IF rst = '1' THEN
+  	  cnt_2 <= 0;
+    ELSIF clk'event AND clk = '1' AND mod_4_counter_2_enable = '1' THEN
       cnt_2 <= (cnt_2 + 1) MOD 4;
     END IF;
   END PROCESS;
 
-  dec_3: PROCESS(cnt_2)
+  dec_3: PROCESS(rst, cnt_2)
   BEGIN
-    CASE cnt_2 IS
-      WHEN 0 => an <= "1000";
-      WHEN 1 => an <= "0100";
-      WHEN 2 => an <= "0010";
-      WHEN 3 => an <= "0001";
-    END CASE;
+  	IF rst = '1' THEN
+      an <= "0000";
+  	ELSE
+      CASE cnt_2 IS
+        WHEN 0 => an <= "1000";
+        WHEN 1 => an <= "0100";
+        WHEN 2 => an <= "0010";
+        WHEN 3 => an <= "0001";
+      END CASE;
+    END IF;
   END PROCESS;
 
   mux_4: PROCESS(cnt_2)
