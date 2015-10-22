@@ -48,13 +48,13 @@ BEGIN
   dec_3: PROCESS(rst, cnt_2)
   BEGIN
   	IF rst = '1' THEN
-      an <= "0000";
+      an <= "1111";
   	ELSE
       CASE cnt_2 IS
-        WHEN 0 => an <= "1000";
-        WHEN 1 => an <= "0100";
-        WHEN 2 => an <= "0010";
-        WHEN 3 => an <= "0001";
+        WHEN 0 => an <= "1110";
+        WHEN 1 => an <= "1101";
+        WHEN 2 => an <= "1011";
+        WHEN 3 => an <= "0111";
       END CASE;
     END IF;
   END PROCESS;
@@ -72,22 +72,22 @@ BEGIN
   dec_5: PROCESS(dec_5_input)
   BEGIN
     CASE dec_5_input IS
-      WHEN "0000" => seg <= "1111110";
-      WHEN "0001" => seg <= "0110000";
-      WHEN "0010" => seg <= "1101101";
-      WHEN "0011" => seg <= "1111001";
-      WHEN "0100" => seg <= "0110011";
-      WHEN "0101" => seg <= "1011011";
-      WHEN "0110" => seg <= "1011111";
-      WHEN "0111" => seg <= "1110000";
-      WHEN "1000" => seg <= "1111111";
-      WHEN "1001" => seg <= "1111011";
-      WHEN "1010" => seg <= "1110111";
-      WHEN "1011" => seg <= "0011111";
-      WHEN "1100" => seg <= "1001110";
-      WHEN "1101" => seg <= "0111101";
-      WHEN "1110" => seg <= "1001111";
-      WHEN "1111" => seg <= "1000111";
+      WHEN "0000" => seg <= "0000001";
+      WHEN "0001" => seg <= "1001111";
+      WHEN "0010" => seg <= "0010010";
+      WHEN "0011" => seg <= "0000110";
+      WHEN "0100" => seg <= "1001100";
+      WHEN "0101" => seg <= "0100100";
+      WHEN "0110" => seg <= "0100000";
+      WHEN "0111" => seg <= "0001111";
+      WHEN "1000" => seg <= "0000000";
+      WHEN "1001" => seg <= "0000100";
+      WHEN "1010" => seg <= "0001000";
+      WHEN "1011" => seg <= "1100000";
+      WHEN "1100" => seg <= "0110001";
+      WHEN "1101" => seg <= "1000010";
+      WHEN "1110" => seg <= "0110000";
+      WHEN "1111" => seg <= "0111000";
       WHEN OTHERS => seg <= "XXXXXXX";
     END CASE;
   END PROCESS;
@@ -95,10 +95,10 @@ BEGIN
   mux_6: PROCESS(cnt_2)
   BEGIN
     CASE cnt_2 IS
-      WHEN 0 => dp <= dpin(3);
-      WHEN 1 => dp <= dpin(2);
-      WHEN 2 => dp <= dpin(1);
-      WHEN 3 => dp <= dpin(0);
+      WHEN 0 => dp <= NOT dpin(3);
+      WHEN 1 => dp <= NOT dpin(2);
+      WHEN 2 => dp <= NOT dpin(1);
+      WHEN 3 => dp <= NOT dpin(0);
     END CASE;
   END PROCESS;
 
