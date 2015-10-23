@@ -59,7 +59,7 @@ BEGIN
     END IF;
   END PROCESS;
 
-  mux_4: PROCESS(cnt_2)
+  mux_4: PROCESS(cnt_2, data)
   BEGIN
     CASE cnt_2 IS
       WHEN 0 => dec_5_input <= data(15 DOWNTO 12);
@@ -88,11 +88,11 @@ BEGIN
       WHEN "1101" => seg <= "1000010";
       WHEN "1110" => seg <= "0110000";
       WHEN "1111" => seg <= "0111000";
-      WHEN OTHERS => seg <= "XXXXXXX";
+		WHEN OTHERS => seg <= "XXXXXXX";
     END CASE;
   END PROCESS;
 
-  mux_6: PROCESS(cnt_2)
+  mux_6: PROCESS(cnt_2, dpin)
   BEGIN
     CASE cnt_2 IS
       WHEN 0 => dp <= NOT dpin(3);
