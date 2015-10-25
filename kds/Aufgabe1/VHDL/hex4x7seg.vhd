@@ -95,10 +95,10 @@ BEGIN
   mux_6: PROCESS(cnt_2, dpin)
   BEGIN
     CASE cnt_2 IS
-      WHEN 0 => dp <= NOT dpin(3);
-      WHEN 1 => dp <= NOT dpin(2);
-      WHEN 2 => dp <= NOT dpin(1);
-      WHEN 3 => dp <= NOT dpin(0);
+      WHEN 0 => dp <= NOT dpin(0);
+      WHEN 1 => dp <= NOT dpin(1);
+      WHEN 2 => dp <= NOT dpin(2);
+      WHEN 3 => dp <= NOT dpin(3);
     END CASE;
   END PROCESS;
 
