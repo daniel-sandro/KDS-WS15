@@ -51,10 +51,10 @@ BEGIN
       an <= "1111";
   	ELSE
       CASE cnt_2 IS
-        WHEN 0 => an <= "1110";
-        WHEN 1 => an <= "1101";
-        WHEN 2 => an <= "1011";
-        WHEN 3 => an <= "0111";
+        WHEN 0 => an <= "0111";
+        WHEN 1 => an <= "1011";
+        WHEN 2 => an <= "1101";
+        WHEN 3 => an <= "1110";
       END CASE;
     END IF;
   END PROCESS;
@@ -88,17 +88,17 @@ BEGIN
       WHEN "1101" => seg <= "1000010";
       WHEN "1110" => seg <= "0110000";
       WHEN "1111" => seg <= "0111000";
-		WHEN OTHERS => seg <= "XXXXXXX";
+      WHEN OTHERS => seg <= "XXXXXXX";
     END CASE;
   END PROCESS;
 
   mux_6: PROCESS(cnt_2, dpin)
   BEGIN
     CASE cnt_2 IS
-      WHEN 0 => dp <= NOT dpin(0);
-      WHEN 1 => dp <= NOT dpin(1);
-      WHEN 2 => dp <= NOT dpin(2);
-      WHEN 3 => dp <= NOT dpin(3);
+      WHEN 0 => dp <= NOT dpin(3);
+      WHEN 1 => dp <= NOT dpin(2);
+      WHEN 2 => dp <= NOT dpin(1);
+      WHEN 3 => dp <= NOT dpin(0);
     END CASE;
   END PROCESS;
 
