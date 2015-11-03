@@ -61,74 +61,73 @@ BEGIN
                 LD0:  std_logic;
             END RECORD;
             TYPE frames IS ARRAY(natural RANGE <>) OF frame;
-            CONSTANT SEG_0:  std_logic_vector(7 DOWNTO 1) := "0000001";
-            CONSTANT SEG_1:   std_logic_vector(7 DOWNTO 1) := "1001111";
-            CONSTANT SEG_2:   std_logic_vector(7 DOWNTO 1) := "0010010";
+            CONSTANT SEG_0: std_logic_vector(7 DOWNTO 1) := "0000001";
+            CONSTANT SEG_1: std_logic_vector(7 DOWNTO 1) := "1001111";
+            CONSTANT SEG_2: std_logic_vector(7 DOWNTO 1) := "0010010";
             CONSTANT SEG_3: std_logic_vector(7 DOWNTO 1) := "0000110";
-            CONSTANT SEG_4:  std_logic_vector(7 DOWNTO 1) := "1001100";
-            CONSTANT SEG_5:  std_logic_vector(7 DOWNTO 1) := "0100100";
-            CONSTANT SEG_6:   std_logic_vector(7 DOWNTO 1) := "0100000";
+            CONSTANT SEG_4: std_logic_vector(7 DOWNTO 1) := "1001100";
+            CONSTANT SEG_5: std_logic_vector(7 DOWNTO 1) := "0100100";
+            CONSTANT SEG_6: std_logic_vector(7 DOWNTO 1) := "0100000";
             CONSTANT SEG_7: std_logic_vector(7 DOWNTO 1) := "0001111";
             CONSTANT SEG_8: std_logic_vector(7 DOWNTO 1) := "0000000";
-            CONSTANT SEG_9:  std_logic_vector(7 DOWNTO 1) := "0000100";
-            CONSTANT SEG_A:     std_logic_vector(7 DOWNTO 1) := "0001000";
-            CONSTANT SEG_B:     std_logic_vector(7 DOWNTO 1) := "1100000";
-            CONSTANT SEG_C:     std_logic_vector(7 DOWNTO 1) := "0110001";
-            CONSTANT SEG_D:     std_logic_vector(7 DOWNTO 1) := "1000010";
-            CONSTANT SEG_E:     std_logic_vector(7 DOWNTO 1) := "0110000";
-            CONSTANT SEG_F:     std_logic_vector(7 DOWNTO 1) := "0111000";
-            CONSTANT SEG_X:  std_logic_vector(7 DOWNTO 1) := "XXXXXXX";
+            CONSTANT SEG_9: std_logic_vector(7 DOWNTO 1) := "0000100";
+            CONSTANT SEG_A: std_logic_vector(7 DOWNTO 1) := "0001000";
+            CONSTANT SEG_B: std_logic_vector(7 DOWNTO 1) := "1100000";
+            CONSTANT SEG_C: std_logic_vector(7 DOWNTO 1) := "0110001";
+            CONSTANT SEG_D: std_logic_vector(7 DOWNTO 1) := "1000010";
+            CONSTANT SEG_E: std_logic_vector(7 DOWNTO 1) := "0110000";
+            CONSTANT SEG_F: std_logic_vector(7 DOWNTO 1) := "0111000";
             CONSTANT testtab: frames := (
-                ('0', '0', '0', SEG_0, SEG_0, '0'),
-                ('1', '0', '0', SEG_0, SEG_0, '0'),
-                ('1', '0', '0', SEG_1, SEG_1, '0'),
-                ('1', '0', '0', SEG_2, SEG_2, '0'),
-                ('1', '0', '0', SEG_3, SEG_3, '0'),
-                ('1', '0', '0', SEG_4, SEG_4, '0'),
-                ('1', '0', '0', SEG_5, SEG_5, '0'),
-                ('1', '0', '0', SEG_6, SEG_6, '0'),
-                ('1', '0', '0', SEG_7, SEG_7, '0'),
-                ('1', '0', '0', SEG_8, SEG_8, '0'),
-                ('1', '0', '0', SEG_9, SEG_9, '0'),
-                ('1', '0', '0', SEG_A, SEG_A, '0'),
-                ('1', '0', '0', SEG_B, SEG_B, '0'),
-                ('1', '0', '0', SEG_C, SEG_C, '0'),
-                ('1', '0', '0', SEG_D, SEG_D, '0'),
-                ('1', '0', '0', SEG_E, SEG_E, '0'),
-                ('1', '0', '0', SEG_F, SEG_F, '0'),
-                ('1', '0', '0', SEG_0, SEG_0, '0'),
-                ('0', '0', '1', SEG_X, SEG_1, '0'),
-                ('0', '0', '1', SEG_X, SEG_2, '0'),
-                ('0', '0', '1', SEG_X, SEG_3, '0'),
-                ('0', '0', '1', SEG_X, SEG_4, '0'),
-                ('0', '0', '1', SEG_X, SEG_5, '0'),
-                ('0', '0', '1', SEG_X, SEG_6, '0'),
-                ('0', '0', '1', SEG_X, SEG_7, '0'),
-                ('0', '0', '1', SEG_X, SEG_8, '0'),
-                ('0', '0', '1', SEG_X, SEG_9, '0'),
-                ('0', '0', '1', SEG_X, SEG_A, '0'),
-                ('0', '0', '1', SEG_X, SEG_B, '0'),
-                ('0', '0', '1', SEG_X, SEG_C, '0'),
-                ('0', '0', '1', SEG_X, SEG_D, '0'),
-                ('0', '0', '1', SEG_X, SEG_E, '0'),
-                ('0', '0', '1', SEG_X, SEG_F, '0'),
-                ('0', '0', '1', SEG_X, SEG_0, '1'),
-                ('0', '1', '0', SEG_X, SEG_F, '1'),      -- NOTE: Underflow activates carry
-                ('0', '1', '0', SEG_X, SEG_E, '0'),
-                ('0', '1', '0', SEG_X, SEG_D, '0'),
-                ('0', '1', '0', SEG_X, SEG_C, '0'),
-                ('0', '1', '0', SEG_X, SEG_B, '0'),
-                ('0', '1', '0', SEG_X, SEG_A, '0'),
-                ('0', '1', '0', SEG_X, SEG_9, '0'),
-                ('0', '1', '0', SEG_X, SEG_8, '0'),
-                ('0', '1', '0', SEG_X, SEG_7, '0'),
-                ('0', '1', '0', SEG_X, SEG_6, '0'),
-                ('0', '1', '0', SEG_X, SEG_5, '0'),
-                ('0', '1', '0', SEG_X, SEG_4, '0'),
-                ('0', '1', '0', SEG_X, SEG_3, '0'),
-                ('0', '1', '0', SEG_X, SEG_2, '0'),
-                ('0', '1', '0', SEG_X, SEG_1, '0'),
-                ('0', '1', '0', SEG_X, SEG_0, '0')
+                ('0', '0', '0', "00000000", SEG_0, '0'),
+                ('1', '0', '0', "00000000", SEG_0, '0'),
+                ('1', '0', '0', "00000001", SEG_1, '0'),
+                ('1', '0', '0', "00000010", SEG_2, '0'),
+                ('1', '0', '0', "00000011", SEG_3, '0'),
+                ('1', '0', '0', "00000100", SEG_4, '0'),
+                ('1', '0', '0', "00000101", SEG_5, '0'),
+                ('1', '0', '0', "00000110", SEG_6, '0'),
+                ('1', '0', '0', "00000111", SEG_7, '0'),
+                ('1', '0', '0', "00001000", SEG_8, '0'),
+                ('1', '0', '0', "00001001", SEG_9, '0'),
+                ('1', '0', '0', "00001010", SEG_A, '0'),
+                ('1', '0', '0', "00001011", SEG_B, '0'),
+                ('1', '0', '0', "00001100", SEG_C, '0'),
+                ('1', '0', '0', "00001101", SEG_D, '0'),
+                ('1', '0', '0', "00001110", SEG_E, '0'),
+                ('1', '0', '0', "00001111", SEG_F, '0'),
+                ('1', '0', '0', "00000000", SEG_0, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_1, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_2, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_3, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_4, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_5, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_6, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_7, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_8, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_9, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_A, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_B, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_C, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_D, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_E, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_F, '0'),
+                ('0', '0', '1', "XXXXXXXX", SEG_0, '1'),
+                ('0', '1', '0', "XXXXXXXX", SEG_F, '1'),      -- NOTE: Underflow activates carry
+                ('0', '1', '0', "XXXXXXXX", SEG_E, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_D, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_C, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_B, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_A, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_9, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_8, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_7, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_6, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_5, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_4, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_3, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_2, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_1, '0'),
+                ('0', '1', '0', "XXXXXXXX", SEG_0, '0')
             );
         BEGIN
             ASSERT FALSE REPORT "starting test for std_counter..." SEVERITY note;
