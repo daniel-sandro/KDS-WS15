@@ -38,7 +38,23 @@ END std_counter;
 -- cnt = Wert des Zaehlers
 --
 
---
--- Im Rahmen der 2. Aufgabe soll hier die Architekturbeschreibung
--- zur Entity std_counter implementiert werden
---
+ARCHITECTURE structural OF std_counter IS
+  CONSTANT MAXCNT := (2 ** CNTLEN) - 1;
+  SIGNAL cnt: integer RANGE 0 TO MAXCNT;
+BEGIN
+  p1: PROCESS(clk, rst, ...?)
+  BEGIN
+    IF rst = '1' THEN
+      cnt <= 0;
+    ELSIF clk'event AND clk = '1' THEN
+      IF inc = '1' THEN
+        cnt <= (cnt + 1) MOD MAXCNT;
+      ELSIF dec = '1' THEN
+        cnt <= (cnt - 1) MOD MAXCNT;
+      ELSIF load = '1' THEN
+        cnt <= to_integer(unsigned(din));
+      END IF;
+    END IF;
+    dout <= std_logic_vector(to_unsigned(cnt, dout'LENGTH));
+  END PROCESS;
+END structural;
