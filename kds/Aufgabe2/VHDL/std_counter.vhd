@@ -40,8 +40,8 @@ END std_counter;
 --
 
 ARCHITECTURE structural OF std_counter IS
-  CONSTANT MAXCNT: integer := (2 ** CNTLEN) - 1;
-  SIGNAL cnt: integer RANGE 0 TO MAXCNT;
+  CONSTANT MAXCNT: integer := 2 ** CNTLEN;
+  SIGNAL cnt: integer RANGE 0 TO MAXCNT - 1;
 BEGIN
   p1: PROCESS(clk, rst)
   BEGIN
@@ -50,11 +50,19 @@ BEGIN
     ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
       IF inc = '1' THEN
         cnt <= (cnt + 1) MOD MAXCNT;
-        cout <= '1' WHEN cnt = 0 ELSE '0';
+        IF cnt = 0 THEN
+          cout <= '1';
+        ELSE
+          cout <= '0';
+        END IF;
       ELSIF dec = '1' THEN
         cnt <= (cnt - 1) MOD MAXCNT;
         -- NOTE: Does underflow activate carry?
-        cout <= '1' WHEN cnt = MAXCNT ELSE '0';
+        IF cnt = (MAXCNT - 1) THEN
+          cout <= '1';
+        ELSE
+          cout <= '0';
+        END IF;
       ELSIF load = '1' THEN
         cnt <= to_integer(unsigned(din));
         cout <= '0';
