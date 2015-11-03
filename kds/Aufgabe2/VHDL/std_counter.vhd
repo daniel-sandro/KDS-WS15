@@ -2,6 +2,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
+USE ieee.numeric_std.ALL;
 
 ENTITY std_counter IS
    GENERIC(RSTDEF: std_logic := '1';
@@ -39,14 +40,14 @@ END std_counter;
 --
 
 ARCHITECTURE structural OF std_counter IS
-  CONSTANT MAXCNT := (2 ** CNTLEN) - 1;
+  CONSTANT MAXCNT: integer := (2 ** CNTLEN) - 1;
   SIGNAL cnt: integer RANGE 0 TO MAXCNT;
 BEGIN
-  p1: PROCESS(clk, rst, ...?)
+  p1: PROCESS(clk, rst)
   BEGIN
-    IF rst = '1' THEN
+    IF rst = RSTDEF OR swrst = RSTDEF THEN
       cnt <= 0;
-    ELSIF clk'event AND clk = '1' THEN
+    ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
       IF inc = '1' THEN
         cnt <= (cnt + 1) MOD MAXCNT;
       ELSIF dec = '1' THEN
