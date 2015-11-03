@@ -50,10 +50,14 @@ BEGIN
     ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
       IF inc = '1' THEN
         cnt <= (cnt + 1) MOD MAXCNT;
+        cout <= '1' WHEN cnt = 0 ELSE '0';
       ELSIF dec = '1' THEN
         cnt <= (cnt - 1) MOD MAXCNT;
+        -- NOTE: Does underflow activate carry?
+        cout <= '1' WHEN cnt = MAXCNT ELSE '0';
       ELSIF load = '1' THEN
         cnt <= to_integer(unsigned(din));
+        cout <= '0';
       END IF;
     END IF;
     dout <= std_logic_vector(to_unsigned(cnt, dout'LENGTH));
