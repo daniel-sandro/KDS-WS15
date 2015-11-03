@@ -52,9 +52,96 @@ BEGIN
 
     main: PROCESS
         PROCEDURE test_std_counter IS
+            TYPE frame IS RECORD
+                BTN0: std_logic;
+                BTN1: std_logic;
+                BTN2: std_logic;
+                sw:   std_logic_vector(7 DOWNTO 0);
+                seg:  std_logic_vector(7 DOWNTO 1);
+                LD0:  std_logic;
+            END RECORD;
+            TYPE frames IS ARRAY(natural RANGE <>) OF frame;
+            CONSTANT SEG_0:  std_logic_vector(7 DOWNTO 1) := "0000001";
+            CONSTANT SEG_1:   std_logic_vector(7 DOWNTO 1) := "1001111";
+            CONSTANT SEG_2:   std_logic_vector(7 DOWNTO 1) := "0010010";
+            CONSTANT SEG_3: std_logic_vector(7 DOWNTO 1) := "0000110";
+            CONSTANT SEG_4:  std_logic_vector(7 DOWNTO 1) := "1001100";
+            CONSTANT SEG_5:  std_logic_vector(7 DOWNTO 1) := "0100100";
+            CONSTANT SEG_6:   std_logic_vector(7 DOWNTO 1) := "0100000";
+            CONSTANT SEG_7: std_logic_vector(7 DOWNTO 1) := "0001111";
+            CONSTANT SEG_8: std_logic_vector(7 DOWNTO 1) := "0000000";
+            CONSTANT SEG_9:  std_logic_vector(7 DOWNTO 1) := "0000100";
+            CONSTANT SEG_A:     std_logic_vector(7 DOWNTO 1) := "0001000";
+            CONSTANT SEG_B:     std_logic_vector(7 DOWNTO 1) := "1100000";
+            CONSTANT SEG_C:     std_logic_vector(7 DOWNTO 1) := "0110001";
+            CONSTANT SEG_D:     std_logic_vector(7 DOWNTO 1) := "1000010";
+            CONSTANT SEG_E:     std_logic_vector(7 DOWNTO 1) := "0110000";
+            CONSTANT SEG_F:     std_logic_vector(7 DOWNTO 1) := "0111000";
+            CONSTANT SEG_X:  std_logic_vector(7 DOWNTO 1) := "XXXXXXX";
+            CONSTANT testtab: frames := (
+                ('0', '0', '0', SEG_0, SEG_0, '0'),
+                ('1', '0', '0', SEG_0, SEG_0, '0'),
+                ('1', '0', '0', SEG_1, SEG_1, '0'),
+                ('1', '0', '0', SEG_2, SEG_2, '0'),
+                ('1', '0', '0', SEG_3, SEG_3, '0'),
+                ('1', '0', '0', SEG_4, SEG_4, '0'),
+                ('1', '0', '0', SEG_5, SEG_5, '0'),
+                ('1', '0', '0', SEG_6, SEG_6, '0'),
+                ('1', '0', '0', SEG_7, SEG_7, '0'),
+                ('1', '0', '0', SEG_8, SEG_8, '0'),
+                ('1', '0', '0', SEG_9, SEG_9, '0'),
+                ('1', '0', '0', SEG_A, SEG_A, '0'),
+                ('1', '0', '0', SEG_B, SEG_B, '0'),
+                ('1', '0', '0', SEG_C, SEG_C, '0'),
+                ('1', '0', '0', SEG_D, SEG_D, '0'),
+                ('1', '0', '0', SEG_E, SEG_E, '0'),
+                ('1', '0', '0', SEG_F, SEG_F, '0'),
+                ('1', '0', '0', SEG_0, SEG_0, '0'),
+                ('0', '0', '1', SEG_X, SEG_1, '0'),
+                ('0', '0', '1', SEG_X, SEG_2, '0'),
+                ('0', '0', '1', SEG_X, SEG_3, '0'),
+                ('0', '0', '1', SEG_X, SEG_4, '0'),
+                ('0', '0', '1', SEG_X, SEG_5, '0'),
+                ('0', '0', '1', SEG_X, SEG_6, '0'),
+                ('0', '0', '1', SEG_X, SEG_7, '0'),
+                ('0', '0', '1', SEG_X, SEG_8, '0'),
+                ('0', '0', '1', SEG_X, SEG_9, '0'),
+                ('0', '0', '1', SEG_X, SEG_A, '0'),
+                ('0', '0', '1', SEG_X, SEG_B, '0'),
+                ('0', '0', '1', SEG_X, SEG_C, '0'),
+                ('0', '0', '1', SEG_X, SEG_D, '0'),
+                ('0', '0', '1', SEG_X, SEG_E, '0'),
+                ('0', '0', '1', SEG_X, SEG_F, '0'),
+                ('0', '0', '1', SEG_X, SEG_0, '1'),
+                ('0', '1', '0', SEG_X, SEG_F, '1'),      -- NOTE: Underflow activates carry
+                ('0', '1', '0', SEG_X, SEG_E, '0'),
+                ('0', '1', '0', SEG_X, SEG_D, '0'),
+                ('0', '1', '0', SEG_X, SEG_C, '0'),
+                ('0', '1', '0', SEG_X, SEG_B, '0'),
+                ('0', '1', '0', SEG_X, SEG_A, '0'),
+                ('0', '1', '0', SEG_X, SEG_9, '0'),
+                ('0', '1', '0', SEG_X, SEG_8, '0'),
+                ('0', '1', '0', SEG_X, SEG_7, '0'),
+                ('0', '1', '0', SEG_X, SEG_6, '0'),
+                ('0', '1', '0', SEG_X, SEG_5, '0'),
+                ('0', '1', '0', SEG_X, SEG_4, '0'),
+                ('0', '1', '0', SEG_X, SEG_3, '0'),
+                ('0', '1', '0', SEG_X, SEG_2, '0'),
+                ('0', '1', '0', SEG_X, SEG_1, '0'),
+                ('0', '1', '0', SEG_X, SEG_0, '0')
+            );
         BEGIN
             ASSERT FALSE REPORT "starting test for std_counter..." SEVERITY note;
-            -- TODO: implement test
+            FOR i IN testtab'RANGE LOOP
+                WAIT UNTIL clk'EVENT AND clk = '1';
+                BTN0 <= testtab(i).BTN0;
+                BTN1 <= testtab(i).BTN1;
+                BTN2 <= testtab(i).BTN2;
+                sw   <= testtab(i).sw;
+                WAIT UNTIL clk'EVENT AND clk = '1';
+                ASSERT seg = testtab(i).seg REPORT "wrong segment" SEVERITY error;
+                ASSERT LD0 = testtab(i).LD0 REPORT "wrong dot point" SEVERITY error;
+            END LOOP;
         END PROCEDURE;
 
         PROCEDURE test_sync_buffer IS
@@ -82,7 +169,7 @@ BEGIN
         test_sync_module;
         test_aufgabe2;
 
-        ASSERT FALSE REPORT "all tests done" SEVERITY note;
+        ASSERT FALSE REPORT "all tests completed" SEVERITY note;
 
         hlt <= '1';
         WAIT;
