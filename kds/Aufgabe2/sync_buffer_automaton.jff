@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
+	<type>mealy</type>
+	<automaton>
+		<!--The list of states.-->
+		<state id="0" name="S0">
+			<x>115.0</x>
+			<y>132.0</y>
+		</state>
+		<state id="1" name="S1">
+			<x>361.0</x>
+			<y>131.0</y>
+		</state>
+		<!--The list of transitions.-->
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>1, &lt;N-1</read>
+			<transout>CNT+1, 1</transout>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>0, &gt;0</read>
+			<transout>CNT-1, 1</transout>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>1, &lt;N-1</read>
+			<transout>CNT+1, 0</transout>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>0</to>
+			<read>0, =0</read>
+			<transout>CNT, 1</transout>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>0, =0</read>
+			<transout>CNT, 0</transout>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>0</to>
+			<read>0, &gt;0</read>
+			<transout>CNT-1, 0</transout>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>1, =N-1</read>
+			<transout>CNT, 0</transout>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>1</to>
+			<read>1, =N-1</read>
+			<transout>CNT, 1</transout>
+		</transition>
+	</automaton>
+</structure>
