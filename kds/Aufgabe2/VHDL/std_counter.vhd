@@ -47,6 +47,7 @@ BEGIN
   BEGIN
     IF rst = RSTDEF OR swrst = RSTDEF THEN
       cnt <= 0;
+      cout <= '0';
     ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
       IF inc = '1' THEN
         cnt <= (cnt + 1) MOD MAXCNT;
