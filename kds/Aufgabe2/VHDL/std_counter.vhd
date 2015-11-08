@@ -39,7 +39,7 @@ END std_counter;
 -- cnt = Wert des Zaehlers
 --
 
-ARCHITECTURE structural OF std_counter IS
+ARCHITECTURE behavioral OF std_counter IS
   CONSTANT MAXCNT: integer := 2 ** CNTLEN;
   SIGNAL cnt: integer RANGE 0 TO MAXCNT - 1;
 BEGIN
@@ -70,4 +70,4 @@ BEGIN
     END IF;
     dout <= std_logic_vector(to_unsigned(cnt, dout'LENGTH));
   END PROCESS;
-END structural;
+END behavioral;
