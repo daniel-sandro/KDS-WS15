@@ -24,6 +24,7 @@ ARCHITECTURE behavioral OF sync_buffer IS
 	SIGNAL cnt: integer RANGE 0 TO N - 1;
 	TYPE STATE_TYPE IS (s0, s1);
 	SIGNAL state: STATE_TYPE;
+	SIGNAL qout: std_logic;
 BEGIN
 
 	flip_flops: PROCESS(clk, rst)
@@ -37,7 +38,7 @@ BEGIN
 			automaton_input <= q1;
 			q1 <= din;
 		END IF;
-	END ff1;
+	END PROCESS;
 
 	automaton: PROCESS(clk, rst)
 	BEGIN
@@ -64,7 +65,7 @@ BEGIN
 							state <= s1;
 						END IF;
 					END IF;
-					automaton_output <= '0'
+					automaton_output <= '0';
 				WHEN s1 =>
 					IF automaton_input = '0' THEN
 						IF cnt = 0 THEN
@@ -86,9 +87,11 @@ BEGIN
 					automaton_output <= '1';
 			END CASE;
 		END IF;
-	END automaton;
+	END PROCESS;
 
-	redge <= (NOT automaton_output) AND dout;
-	fedge <= (NOT dout) AND automaton_output;
+	redge <= (NOT automaton_output) AND qout;
+	fedge <= (NOT qout) AND automaton_output;
+
+	dout <= qout;
 
 END behavioral;

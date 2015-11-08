@@ -75,7 +75,7 @@ BEGIN
         IF rst = RSTDEF OR swrst = RSTDEF THEN
             buf_en <= '0';
             freq_divider_cnt <= 0;
-        ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
+        ELSIF clk'EVENT AND clk = '1' THEN
             IF freq_divider_cnt = 0 THEN
                 buf_en <= '1';
             ELSE
