@@ -30,11 +30,11 @@ BEGIN
 	flip_flops: PROCESS(clk, rst)
 	BEGIN
 		IF rst = RSTDEF OR swrst = RSTDEF THEN
-			dout <= '0';
+			qout <= '0';
 			automaton_input <= '0';
 			q1 <= '0';
 		ELSIF clk'EVENT AND clk = '1' THEN
-			dout <= automaton_output;
+			qout <= automaton_output;
 			automaton_input <= q1;
 			q1 <= din;
 		END IF;
