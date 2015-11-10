@@ -79,62 +79,81 @@ BEGIN
             CONSTANT SEG_E: std_logic_vector(7 DOWNTO 1) := "0110000";
             CONSTANT SEG_F: std_logic_vector(7 DOWNTO 1) := "0111000";
             CONSTANT testtab: frames := (
+                -- Load tests
                 ("1110", '0', '0', '0', X"00", SEG_0, '0'),
-                ("1110", '1', '0', '0', X"00", SEG_0, '0'),
-                ("1110", '1', '0', '0', X"01", SEG_1, '0'),
-                ("1110", '1', '0', '0', X"02", SEG_2, '0'),
-                ("1110", '1', '0', '0', X"03", SEG_3, '0'),
-                ("1110", '1', '0', '0', X"04", SEG_4, '0'),
-                ("1110", '1', '0', '0', X"05", SEG_5, '0'),
-                ("1110", '1', '0', '0', X"06", SEG_6, '0'),
-                ("1110", '1', '0', '0', X"07", SEG_7, '0'),
-                ("1110", '1', '0', '0', X"08", SEG_8, '0'),
-                ("1110", '1', '0', '0', X"09", SEG_9, '0'),
-                ("1110", '1', '0', '0', X"0A", SEG_A, '0'),
-                ("1110", '1', '0', '0', X"0B", SEG_B, '0'),
-                ("1110", '1', '0', '0', X"0C", SEG_C, '0'),
-                ("1110", '1', '0', '0', X"0D", SEG_D, '0'),
-                ("1110", '1', '0', '0', X"0E", SEG_E, '0'),
-                ("1110", '1', '0', '0', X"0F", SEG_F, '0'),
-                ("1110", '1', '0', '0', X"00", SEG_0, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_1, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_2, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_3, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_4, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_5, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_6, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_7, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_8, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_9, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_A, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_B, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_C, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_D, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_E, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_F, '0'),
-                ("1110", '0', '0', '1', "XXXXXXXX", SEG_0, '1'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_F, '1'),      -- NOTE: Underflow activates carry
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_E, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_D, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_C, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_B, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_A, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_9, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_8, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_7, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_6, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_5, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_4, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_3, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_2, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_1, '0'),
-                ("1110", '0', '1', '0', "XXXXXXXX", SEG_0, '0')
+                ("1110", '1', '0', '0', X"00", SEG_0, '0'),         -- Loads 0x0000
+                ("1110", '1', '0', '0', X"01", SEG_1, '0'),         -- Loads 0x0001
+                ("1110", '1', '0', '0', X"02", SEG_2, '0'),         -- Loads 0x0002
+                ("1110", '1', '0', '0', X"03", SEG_3, '0'),         -- Loads 0x0003
+                ("1110", '1', '0', '0', X"04", SEG_4, '0'),         -- Loads 0x0004
+                ("1110", '1', '0', '0', X"05", SEG_5, '0'),         -- Loads 0x0005
+                ("1110", '1', '0', '0', X"06", SEG_6, '0'),         -- Loads 0x0006
+                ("1110", '1', '0', '0', X"07", SEG_7, '0'),         -- Loads 0x0007
+                ("1110", '1', '0', '0', X"08", SEG_8, '0'),         -- Loads 0x0008
+                ("1110", '1', '0', '0', X"09", SEG_9, '0'),         -- Loads 0x0009
+                ("1110", '1', '0', '0', X"0A", SEG_A, '0'),         -- Loads 0x000A
+                ("1110", '1', '0', '0', X"0B", SEG_B, '0'),         -- Loads 0x000B
+                ("1110", '1', '0', '0', X"0C", SEG_C, '0'),         -- Loads 0x000C
+                ("1110", '1', '0', '0', X"0D", SEG_D, '0'),         -- Loads 0x000D
+                ("1110", '1', '0', '0', X"0E", SEG_E, '0'),         -- Loads 0x000E
+                ("1110", '1', '0', '0', X"0F", SEG_F, '0'),         -- Loads 0x000F
+                ("1101", '1', '0', '0', X"00", SEG_0, '0'),         -- Loads 0x0000
+                ("1101", '1', '0', '0', X"10", SEG_1, '0'),         -- Loads 0x0010
+                ("1101", '1', '0', '0', X"20", SEG_2, '0'),         -- Loads 0x0020
+                ("1101", '1', '0', '0', X"30", SEG_3, '0'),         -- Loads 0x0030
+                ("1101", '1', '0', '0', X"40", SEG_4, '0'),         -- Loads 0x0040
+                ("1101", '1', '0', '0', X"50", SEG_5, '0'),         -- Loads 0x0050
+                ("1101", '1', '0', '0', X"60", SEG_6, '0'),         -- Loads 0x0060
+                ("1101", '1', '0', '0', X"70", SEG_7, '0'),         -- Loads 0x0070
+                ("1101", '1', '0', '0', X"80", SEG_8, '0'),         -- Loads 0x0080
+                ("1101", '1', '0', '0', X"90", SEG_9, '0'),         -- Loads 0x0090
+                ("1101", '1', '0', '0', X"A0", SEG_A, '0'),         -- Loads 0x00A0
+                ("1101", '1', '0', '0', X"B0", SEG_B, '0'),         -- Loads 0x00B0
+                ("1101", '1', '0', '0', X"C0", SEG_C, '0'),         -- Loads 0x00C0
+                ("1101", '1', '0', '0', X"D0", SEG_D, '0'),         -- Loads 0x00D0
+                ("1101", '1', '0', '0', X"E0", SEG_E, '0'),         -- Loads 0x00E0
+                ("1101", '1', '0', '0', X"F0", SEG_F, '0'),         -- Loads 0x00F0
+                -- Subtraction tests
+                ("1110", '1', '0', '0', X"00", SEG_0, '0'),         -- Loads 0x0000
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_F, '1'),    -- 0xFFFF NOTE: Underflow activates carry
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_E, '0'),    -- 0xFFFE
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_D, '0'),    -- 0xFFFD
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_C, '0'),    -- 0xFFFC
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_B, '0'),    -- 0xFFFB
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_A, '0'),    -- 0xFFFA
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_9, '0'),    -- 0xFFF9
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_8, '0'),    -- 0xFFF8
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_7, '0'),    -- 0xFFF7
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_6, '0'),    -- 0xFFF6
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_5, '0'),    -- 0xFFF5
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_4, '0'),    -- 0xFFF4
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_3, '0'),    -- 0xFFF3
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_2, '0'),    -- 0xFFF2
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_1, '0'),    -- 0xFFF1
+                ("1110", '0', '1', '0', "XXXXXXXX", SEG_0, '0'),     -- 0xFFF0
+                -- Addition tests
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_1, '0'),    -- 0xFFF1
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_2, '0'),    -- 0xFFF2
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_3, '0'),    -- 0xFFF3
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_4, '0'),    -- 0xFFF4
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_5, '0'),    -- 0xFFF5
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_6, '0'),    -- 0xFFF6
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_7, '0'),    -- 0xFFF7
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_8, '0'),    -- 0xFFF8
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_9, '0'),    -- 0xFFF9
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_A, '0'),    -- 0xFFFA
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_B, '0'),    -- 0xFFFB
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_C, '0'),    -- 0xFFFC
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_D, '0'),    -- 0xFFFD
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_E, '0'),    -- 0xFFFE
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_F, '0'),    -- 0xFFFF
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_0, '1'),    -- 0x0000
+                ("1110", '0', '0', '1', "XXXXXXXX", SEG_1, '0')     -- 0x0001                
             );
         BEGIN
             ASSERT FALSE REPORT "starting test for std_counter..." SEVERITY note;
             FOR i IN testtab'RANGE LOOP
-                -- TODO: correct?
-                WAIT UNTIL clk'EVENT AND clk = '1' AND an = testtab(i).an;
+                WAIT UNTIL clk'EVENT AND clk = '1';
                 BTN0 <= testtab(i).BTN0;
                 BTN1 <= testtab(i).BTN1;
                 BTN2 <= testtab(i).BTN2;
@@ -148,6 +167,7 @@ BEGIN
                 FOR j IN 0 TO 5 * (2 ** 15) LOOP
                     WAIT UNTIL clk'EVENT AND clk = '1';
                 END LOOP;
+                WAIT UNTIL clk'EVENT AND clk = '1' AND an = testtab(i).an;
                 ASSERT seg = testtab(i).seg REPORT "wrong segment, i=" & integer'IMAGE(i) SEVERITY error;
                 ASSERT LD0 = testtab(i).LD0 REPORT "wrong carry out, i=" & integer'IMAGE(i) SEVERITY error;
             END LOOP;
