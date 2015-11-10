@@ -41,9 +41,8 @@ BEGIN
              en     => buf_en,
              swrst  => swrst,
              din    => BTN0,
-             -- TODO: check outputs mappings
-             dout   => load,
-             redge  => open,
+             dout   => open,
+             redge  => load,
              fedge  => open);
 
     buf1: sync_buffer
@@ -53,10 +52,9 @@ BEGIN
              en     => buf_en,
              swrst  => swrst,
              din    => BTN1,
-             -- TODO: check outputs mappings
-             dout   => dec,
+             dout   => open,
              redge  => open,
-             fedge  => open);
+             fedge  => dec);
 
     buf2: sync_buffer
     GENERIC MAP(RSTDEF => RSTDEF)
@@ -65,10 +63,9 @@ BEGIN
              en     => buf_en,
              swrst  => swrst,
              din    => BTN2,
-             -- TODO: check outputs mappings
-             dout   => inc,
+             dout   => open,
              redge  => open,
-             fedge  => open);
+             fedge  => inc);
 
     freq_divider: PROCESS(clk, rst)
     BEGIN

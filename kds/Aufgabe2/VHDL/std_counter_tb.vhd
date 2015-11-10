@@ -145,6 +145,7 @@ BEGIN
                 ("1101", '1', '0', '0', X"00E0", SEG_E, '0'),               -- Loads 0x00E0
                 ("1101", '1', '0', '0', X"00F0", SEG_F, '0'),               -- Loads 0x00F0
                 -- Addition tests
+                ("1101", '1', '0', '0', X"FFF0", SEG_F, '0'),               -- Loads 0xFFF0
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_1, '0'),    -- 0xF1
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_2, '0'),    -- 0xF2
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_3, '0'),    -- 0xF3
@@ -161,7 +162,9 @@ BEGIN
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_E, '0'),    -- 0xFE
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_F, '0'),    -- 0xFF
                 ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_0, '1'),    -- 0x00
+                ("1110", '0', '0', '1', "XXXXXXXXXXXXXXXX", SEG_0, '0'),    -- 0x01
                 -- Substraction tests
+                ("1110", '0', '1', '0', "XXXXXXXXXXXXXXXX", SEG_1, '0'),    -- 0xF1
                 ("1110", '0', '1', '0', "XXXXXXXXXXXXXXXX", SEG_F, '1'),    -- 0xFF NOTE: Underflow activates carry
                 ("1110", '0', '1', '0', "XXXXXXXXXXXXXXXX", SEG_E, '0'),    -- 0xFE
                 ("1110", '0', '1', '0', "XXXXXXXXXXXXXXXX", SEG_D, '0'),    -- 0xFD
