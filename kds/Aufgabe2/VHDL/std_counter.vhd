@@ -51,7 +51,7 @@ BEGIN
     ELSIF en = '1' AND clk'EVENT AND clk = '1' THEN
       IF inc = '1' THEN
         cnt <= (cnt + 1) MOD MAXCNT;
-        IF cnt = 0 THEN
+        IF cnt = (MAXCNT - 1) THEN
           cout <= '1';
         ELSE
           cout <= '0';
@@ -59,7 +59,7 @@ BEGIN
       ELSIF dec = '1' THEN
         cnt <= (cnt - 1) MOD MAXCNT;
         -- NOTE: Does underflow activate carry?
-        IF cnt = (MAXCNT - 1) THEN
+        IF cnt = 0 THEN
           cout <= '1';
         ELSE
           cout <= '0';
