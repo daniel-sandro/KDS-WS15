@@ -16,7 +16,7 @@ END sync_buffer;
 
 ARCHITECTURE behavioral OF sync_buffer IS
 
-	CONSTANT N: integer := 4;
+	CONSTANT N: integer := 32;
 
 	SIGNAL q1: std_logic;
 	SIGNAL automaton_input: std_logic;
