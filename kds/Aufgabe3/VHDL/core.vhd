@@ -1,4 +1,5 @@
 LIBRARY ieee;
+LIBRARY unisim;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 USE unisim.vcomponents.ALL;
@@ -92,7 +93,7 @@ BEGIN
         IF rst = RSTDEF THEN
             res <= "X00000000000";
             done <= '1';
-        ELSIF clk'EVENT AND clk = '1'
+        ELSIF clk'EVENT AND clk = '1' THEN
             res <= acc_output;
             IF strt = '1' THEN
                 vector_len <= to_integer(unsigned(sw));
