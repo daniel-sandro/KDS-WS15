@@ -80,8 +80,8 @@ BEGIN
              P => mult_output);
 
     u_signedacc: signed_accumulator
-    GENERIC MAP(RSTDEF => RSTDEF;
-                INPUT_LEN => 36;
+    GENERIC MAP(RSTDEF => RSTDEF,
+                INPUT_LEN => 36,
                 OUTPUT_LEN => 44);
     PORT MAP(rst => rst,
              clk => clk,
@@ -91,7 +91,7 @@ BEGIN
     main: PROCESS
     BEGIN
         IF rst = RSTDEF THEN
-            res <= "X00000000000";
+            res <= "X0000000000000000000000000000000000000000000";
             done <= '1';
         ELSIF clk'EVENT AND clk = '1' THEN
             res <= acc_output;

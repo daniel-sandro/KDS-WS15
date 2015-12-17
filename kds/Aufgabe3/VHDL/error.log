@@ -1,0 +1,43 @@
+
+Started : "Synthesize - XST".
+Running xst...
+Command Line: xst -intstyle ise -ifn "C:/Users/edc07/kds1516/Project1/Aufgabe3/aufgabe3.xst" -ofn "C:/Users/edc07/kds1516/Project1/Aufgabe3/aufgabe3.syr"
+Reading design: aufgabe3.prj
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling vhdl file "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/ram_block.vhd" in Library work.
+Architecture low_level_definition of Entity ram_block is up to date.
+Compiling vhdl file "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/signed_accumulator.vhd" in Library work.
+Architecture behavioral of Entity signed_accumulator is up to date.
+Compiling vhdl file "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/sync_buffer.vhd" in Library work.
+Architecture behavioral of Entity sync_buffer is up to date.
+Compiling vhdl file "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/sync_module.vhd" in Library work.
+Architecture behavioral of Entity sync_module is up to date.
+Compiling vhdl file "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" in Library work.
+Entity <core> compiled.
+ERROR:HDLParsers:3312 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 78. Undefined symbol 'A'.
+ERROR:HDLParsers:1209 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 78. A: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3324 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 78. IN mode Formal NEW_SIZE of resize with no default value must be associated with an actual value.
+ERROR:HDLParsers:3324 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 78. IN mode Formal NEW_SIZE of resize with no default value must be associated with an actual value.
+ERROR:HDLParsers:3312 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 79. Undefined symbol 'B'.
+ERROR:HDLParsers:1209 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 79. B: Undefined symbol (last report in this block)
+ERROR:HDLParsers:3324 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 79. IN mode Formal NEW_SIZE of resize with no default value must be associated with an actual value.
+ERROR:HDLParsers:3324 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 79. IN mode Formal NEW_SIZE of resize with no default value must be associated with an actual value.
+ERROR:HDLParsers:851 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 74. Formal A of MULT18X18S with no default value must be associated with an actual value.
+ERROR:HDLParsers:851 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 82. Formal rst of signed_accumulator with no default value must be associated with an actual value.
+ERROR:HDLParsers:164 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 86. parse error, unexpected PORT
+ERROR:HDLParsers:854 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 104. The expression can not be converted to type unsigned.
+ERROR:HDLParsers:854 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 105. The expression can not be converted to type unsigned.
+WARNING:HDLParsers:1406 - "C:/Users/edc07/kds1516/KDS1516/kds/Aufgabe3/VHDL/core.vhd" Line 91. No sensitivity list and no wait in the process
+--> 
+
+Total memory usage is 251796 kilobytes
+
+Number of errors   :   13 (   0 filtered)
+Number of warnings :    1 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
+
+Process "Synthesize - XST" failed
