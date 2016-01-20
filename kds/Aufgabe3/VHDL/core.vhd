@@ -29,9 +29,9 @@ ARCHITECTURE behavioral OF core IS
 
     COMPONENT MULT18X18S IS
         -- RSTDEF?
-        PORT(rst:   IN std_logic;
-             clk:   IN std_logic;
-             clken: IN std_logic;
+        PORT(R:     IN std_logic;
+             C:     IN std_logic;
+             CE:    IN std_logic;
              A:     IN  std_logic_vector(17 DOWNTO 0);
              B:     IN  std_logic_vector(17 DOWNTO 0);
              P:     OUT std_logic_vector(35 DOWNTO 0));
@@ -43,8 +43,8 @@ ARCHITECTURE behavioral OF core IS
                 OUTPUT_LEN: integer);
         PORT(rst:   IN std_logic;
              clk:   IN std_logic;
-             din:   IN std_logic_vector(INPUT_LEN DOWNTO 0);
-             dout:  OUT std_logic_vector(OUTPUT_LEN DOWNTO 0));
+             din:   IN std_logic_vector(INPUT_LEN-1 DOWNTO 0);
+             dout:  OUT std_logic_vector(OUTPUT_LEN-1 DOWNTO 0));
     END COMPONENT;
 
     CONSTANT BASE_ADDR_A:   integer := 0;
@@ -55,6 +55,8 @@ ARCHITECTURE behavioral OF core IS
 
     SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0);
     SIGNAL ram_output_b:    std_logic_vector(15 DOWNTO 0);
+	 SIGNAL mult_input_a:    std_logic_vector(17 DOWNTO 0);
+	 SIGNAL mult_input_b:    std_logic_vector(17 DOWNTO 0);
     SIGNAL mult_output:     std_logic_vector(35 DOWNTO 0);
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0);
 
@@ -72,17 +74,17 @@ BEGIN
              enb => '0');
 
     u_MULT18X18: MULT18X18S
-    PORT MAP(clk => clk,
-             clken => '1',
-             rst => rst,
-             A => std_logic_vector(resize(signed(ram_output_a), A'LENGTH)),
-             B => std_logic_vector(resize(signed(ram_output_b), B'LENGTH)),
-             P => mult_output);
+    PORT MAP(C  => clk,
+             CE => '1',
+             R  => rst,
+             A  => mult_input_a,
+             B  => mult_input_b,
+             P  => mult_output);
 
     u_signedacc: signed_accumulator
     GENERIC MAP(RSTDEF => RSTDEF,
                 INPUT_LEN => 36,
-                OUTPUT_LEN => 44);
+                OUTPUT_LEN => 44)
     PORT MAP(rst => rst,
              clk => clk,
              din => mult_output,
@@ -101,8 +103,8 @@ BEGIN
                 current_elem <= 0;
             ELSE
                 IF current_elem < vector_len THEN
-                    ram_input_a <= std_logic_vector(unsigned(BASE_ADDR_A + current_elem));
-                    ram_input_b <= std_logic_vector(unsigned(BASE_ADDR_B + current_elem));
+                    ram_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, ram_input_a'LENGTH));
+                    ram_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, ram_input_a'LENGTH));
                     done <= '0';
                     current_elem <= current_elem + 1;
                 ELSE
@@ -111,5 +113,8 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+	 
+	 mult_input_a <= std_logic_vector(resize(signed(ram_output_a), 18));
+	 mult_input_b <= std_logic_vector(resize(signed(ram_output_b), 18));
 
 END behavioral;
