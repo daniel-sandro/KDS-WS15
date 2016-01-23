@@ -24,7 +24,7 @@ BEGIN
         ELSIF clk'EVENT AND clk = '1' THEN
             --acc <= acc + conv_integer(signed(din));
 			acc <= acc + signed(din);
-            dout <= conv_std_logic_vector(acc, OUTPUT_LEN);
+            dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
         END IF;
     END PROCESS;
 END behavioral;

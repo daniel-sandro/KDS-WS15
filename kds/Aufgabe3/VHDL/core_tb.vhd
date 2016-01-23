@@ -55,7 +55,7 @@ BEGIN
 
       TYPE frames IS ARRAY(natural RANGE <>) OF frame;
       CONSTANT test: frames := (
-         --("00000000", X"00000000000", "test 1"),
+         ("00000000", X"00000000000", "test 1"),
          ("00000001", X"FFFFFFFFEE1", "test 2"),
          ("00000010", X"FFFFFFFE8D6", "test 3"),
          ("00001010", X"000000002C9", "test 4"),
