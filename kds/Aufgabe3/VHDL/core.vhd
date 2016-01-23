@@ -57,10 +57,14 @@ ARCHITECTURE behavioral OF core IS
 	SIGNAL mult_input_a:    std_logic_vector(17 DOWNTO 0);
 	SIGNAL mult_input_b:    std_logic_vector(17 DOWNTO 0);
     SIGNAL mult_output:     std_logic_vector(35 DOWNTO 0);
+    SIGNAL acc_input:       std_logic_vector(35 DOWNTO 0);
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0);
 
     SIGNAL vector_len:      integer;
     SIGNAL current_elem:    integer;
+
+    TYPE tstate IS (S0, S1, S2, S3, S4);
+    SIGNAL state: tstate;
 BEGIN
     u_ramblock: ram_block
     PORT MAP(addra => ram_input_a,
@@ -86,29 +90,60 @@ BEGIN
                 OUTPUT_LEN => 44)
     PORT MAP(rst => rst,
              clk => clk,
-             din => mult_output,
+             din => acc_input,
              dout => acc_output);
 
     main: PROCESS(clk, rst)
     BEGIN
         IF rst = RSTDEF THEN
-            res <= (others => '0');
-            done <= '1';
+            res <= (OTHERS => '0');
+            acc_input <= (OTHERS => '0');
+            done <= '0';
+            state <= S4;
         ELSIF clk'EVENT AND clk = '1' THEN
             res <= acc_output;
             IF strt = '1' THEN
                 vector_len <= to_integer(unsigned(sw));
+                res <= (OTHERS => '0');
+                acc_input <= (OTHERS => '0');
                 done <= '0';
                 current_elem <= 0;
+                state <= S0;
             ELSE
-                IF current_elem < vector_len THEN
-                    ram_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, ram_input_a'LENGTH));
-                    ram_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, ram_input_a'LENGTH));
-                    done <= '0';
-                    current_elem <= current_elem + 1;
-                ELSE
-                    done <= '1';
-                END IF;
+                -- Pipeline: @ -> RAM -> MUL -> ACC -> res (5 cycles)
+                CASE state IS
+                    WHEN S0 =>
+                        -- current_elem = 0 (@ -> RAM -> MUL -> ACC -> res)
+                        ram_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, ram_input_a'LENGTH));
+                        ram_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, ram_input_a'LENGTH));
+                        current_elem <= current_elem + 1;
+                        IF current_elem >= vector_len - 1 THEN
+                            state <= S2;
+                        ELSE
+                            state <= S1;
+                        END IF;
+                    WHEN S1 =>
+                        -- 0 < current_elem < vector_len (@ -> RAM -> MUL -> ACC -> res)
+                        ram_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, ram_input_a'LENGTH));
+                        ram_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, ram_input_a'LENGTH));
+                        current_elem <= current_elem + 1;
+                        acc_input <= mult_output;
+                        IF current_elem >= vector_len - 1 THEN
+                            state <= S2;
+                        END IF;
+                    WHEN S2 =>
+                        -- RAM -> MUL -> ACC -> res
+                        acc_input <= mult_output;
+                        state <= S3;
+                    WHEN S3 =>
+                        -- MUL -> ACC -> res
+                        acc_input <= mult_output;
+                        state <= S4;
+                    WHEN S4 =>
+                        -- ACC -> res
+                        acc_input <= (OTHERS => '0');
+                        done <= '1';
+                END CASE;
             END IF;
         END IF;
     END PROCESS;
