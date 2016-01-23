@@ -23,7 +23,7 @@ BEGIN
             dout <= conv_std_logic_vector(acc, OUTPUT_LEN);
         ELSIF clk'EVENT AND clk = '1' THEN
             --acc <= acc + conv_integer(signed(din));
-				acc <= acc + signed(din);
+			acc <= acc + signed(din);
             dout <= conv_std_logic_vector(acc, OUTPUT_LEN);
         END IF;
     END PROCESS;

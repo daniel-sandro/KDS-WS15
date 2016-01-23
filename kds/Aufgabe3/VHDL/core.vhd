@@ -28,7 +28,6 @@ ARCHITECTURE behavioral OF core IS
     END COMPONENT;
 
     COMPONENT MULT18X18S IS
-        -- RSTDEF?
         PORT(R:     IN std_logic;
              C:     IN std_logic;
              CE:    IN std_logic;
@@ -55,8 +54,8 @@ ARCHITECTURE behavioral OF core IS
 
     SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0);
     SIGNAL ram_output_b:    std_logic_vector(15 DOWNTO 0);
-	 SIGNAL mult_input_a:    std_logic_vector(17 DOWNTO 0);
-	 SIGNAL mult_input_b:    std_logic_vector(17 DOWNTO 0);
+	SIGNAL mult_input_a:    std_logic_vector(17 DOWNTO 0);
+	SIGNAL mult_input_b:    std_logic_vector(17 DOWNTO 0);
     SIGNAL mult_output:     std_logic_vector(35 DOWNTO 0);
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0);
 
@@ -90,10 +89,10 @@ BEGIN
              din => mult_output,
              dout => acc_output);
 
-    main: PROCESS
+    main: PROCESS(clk, rst)
     BEGIN
         IF rst = RSTDEF THEN
-            res <= "X0000000000000000000000000000000000000000000";
+            res <= (others => '0');
             done <= '1';
         ELSIF clk'EVENT AND clk = '1' THEN
             res <= acc_output;
@@ -113,8 +112,9 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-	 
-	 mult_input_a <= std_logic_vector(resize(signed(ram_output_a), 18));
-	 mult_input_b <= std_logic_vector(resize(signed(ram_output_b), 18));
+
+    mult_input_a <= std_logic_vector(resize(signed(ram_output_a), mult_input_a'LENGTH));
+    mult_input_b <= std_logic_vector(resize(signed(ram_output_b), mult_input_b'LENGTH));
+    
 
 END behavioral;
