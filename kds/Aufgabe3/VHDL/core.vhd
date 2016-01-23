@@ -69,8 +69,8 @@ BEGIN
              clkb => clk,
              douta => ram_output_a,
              doutb => ram_output_b,
-             ena => '0',
-             enb => '0');
+             ena => '1',
+             enb => '1');
 
     u_MULT18X18: MULT18X18S
     PORT MAP(C  => clk,
@@ -115,6 +115,5 @@ BEGIN
 
     mult_input_a <= std_logic_vector(resize(signed(ram_output_a), mult_input_a'LENGTH));
     mult_input_b <= std_logic_vector(resize(signed(ram_output_b), mult_input_b'LENGTH));
-    
 
 END behavioral;
