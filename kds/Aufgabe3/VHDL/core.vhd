@@ -67,7 +67,7 @@ ARCHITECTURE behavioral OF core IS
     SIGNAL vector_len:      integer := 0;
     SIGNAL current_elem:    integer := 0;
 
-    TYPE tstate IS (S0, S1, S2, S3, S4, S5, IDLE);
+    TYPE tstate IS (S0, S1, S2, S3, IDLE);
     SIGNAL state: tstate := IDLE;
 BEGIN
     u_ramblock: ram_block
@@ -115,10 +115,10 @@ BEGIN
                     current_elem <= 0;
                     state <= S0;
                 ELSE
-                    state <= S5;
+                    state <= S3;
                 END IF;
             ELSE
-                -- Pipeline: @ -> RAM -> MUL -> ACC -> res (6 cycles because of the sign extender between RAM and MUL)
+                -- Pipeline: @ -> RAM -> MUL -> ACC -> res (4 cycles)
                 CASE state IS
                     WHEN S0 =>
                         -- current_elem = 0 (@ -> RAM -> MUL -> ACC -> res)
@@ -150,14 +150,6 @@ BEGIN
                         state <= S3;
                     WHEN S3 =>
                         -- MUL -> ACC -> res
-                        done <= '1';
-
-                        state <= IDLE;
-                    WHEN S4 =>
-                        -- ACC -> res
-                        state <= S5;
-                    WHEN S5 =>
-                        -- res available
                         done <= '1';
 
                         state <= IDLE;
