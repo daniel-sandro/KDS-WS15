@@ -179,7 +179,7 @@ BEGIN
                             acc_manualrst <= '1';
                             ram_addr_a <= std_logic_vector(to_unsigned((current_elem + 1) / (VECTOR_LEN - 2), ram_addr_a'LENGTH));
                             ram_wenable <= '1';
-                        ELSIF (current_elem + 1) MOD (MATRIX_DIM + 3) = 0 THEN
+                        ELSE
                             acc_manualrst <= '0';
                             ram_wenable <= '0';
                         END IF;
