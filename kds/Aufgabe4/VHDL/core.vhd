@@ -21,6 +21,7 @@ ARCHITECTURE behavioral OF core IS
     CONSTANT BASE_ADDR_A:   integer := 16#0000#;
     CONSTANT BASE_ADDR_B:   integer := 16#0100#;
     CONSTANT VECTOR_LEN:    integer := 256;
+    CONSTANT MATRIX_DIM:    integer := 16;
 
     COMPONENT rom_block IS
         PORT(addra: IN std_logic_vector(9 DOWNTO 0);
@@ -86,6 +87,7 @@ ARCHITECTURE behavioral OF core IS
 
     SIGNAL acc_enable:      std_logic := '0';
     SIGNAL acc_rst:         std_logic := '0';
+    SIGNAL acc_manualrst:   std_logic := '0';
     SIGNAL acc_input:       std_logic_vector(35 DOWNTO 0) := (OTHERS => '0');
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0) := (OTHERS => '0');
 
@@ -112,6 +114,8 @@ BEGIN
              A  => mult_input_a,
              B  => mult_input_b,
              P  => mult_output);
+    mult_input_a <= std_logic_vector(resize(signed(rom_output_a), mult_input_a'LENGTH));
+    mult_input_b <= std_logic_vector(resize(signed(rom_output_b), mult_input_b'LENGTH));
 
     u_signedacc: signed_accumulator
     GENERIC MAP(RSTDEF => RSTDEF,
@@ -121,8 +125,7 @@ BEGIN
              clk => clk,
              din => acc_input,
              dout => acc_output);
-    --acc_rst <= rst OR (clk'EVENT AND clk = '1' AND swrst) OR strt;
-    acc_rst <= rst OR strt;
+    acc_rst <= rst OR strt OR acc_manualrst;
     acc_input <= mult_output WHEN acc_enable = '1' ELSE (OTHERS => '0');
 
     u_ramblock: ram_block
@@ -172,10 +175,12 @@ BEGIN
                         END IF;
 
                         -- The current element will be available to be written within 2 cycles
-                        IF (current_elem + 1) MOD (VECTOR_LEN - 2) = 0 THEN
+                        IF (current_elem + 1) MOD (MATRIX_DIM + 2) = 0 THEN
+                            acc_manualrst <= '1';
                             ram_addr_a <= std_logic_vector(to_unsigned((current_elem + 1) / (VECTOR_LEN - 2), ram_addr_a'LENGTH));
                             ram_wenable <= '1';
-                        ELSE
+                        ELSIF (current_elem + 1) MOD (MATRIX_DIM + 3) = 0 THEN
+                            acc_manualrst <= '0';
                             ram_wenable <= '0';
                         END IF;
 

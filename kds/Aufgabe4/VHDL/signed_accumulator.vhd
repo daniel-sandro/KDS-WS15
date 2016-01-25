@@ -13,15 +13,17 @@ ENTITY signed_accumulator IS
 END signed_accumulator;
 
 ARCHITECTURE behavioral OF signed_accumulator IS
+     CONSTANT zero: signed(OUTPUT_LEN-1 DOWNTO 0) := (OTHERS => '0');
 	 SIGNAL acc: signed(OUTPUT_LEN-1 DOWNTO 0);
 BEGIN
     main: PROCESS(rst, clk)
     BEGIN
-        IF rst = '1' THEN
-            acc <= (others => '0');
-            dout <= conv_std_logic_vector(acc, OUTPUT_LEN);
+        IF rst = RSTDEF AND clk'EVENT AND clk = '1' THEN
+            -- workaround
+            acc <= zero + signed(din);
+            dout <= conv_std_logic_vector(signed(din), OUTPUT_LEN);
         ELSIF clk'EVENT AND clk = '1' THEN
-			acc <= acc + signed(din);
+            acc <= acc + signed(din);
             dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
         END IF;
     END PROCESS;
