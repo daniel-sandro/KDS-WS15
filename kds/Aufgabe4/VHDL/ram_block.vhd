@@ -7,7 +7,7 @@ ENTITY ram_block IS
          addrb: IN  std_logic_VECTOR(9 DOWNTO 0);
          clka:  IN  std_logic;
          clkb:  IN  std_logic;
-         dina:  IN  std_logic_VECTOR(15 downto 0);
+         dina:  IN  std_logic_VECTOR(15 DOWNTO 0);
          douta: OUT std_logic_VECTOR(15 DOWNTO 0);
          doutb: OUT std_logic_VECTOR(15 DOWNTO 0);
          ena:   IN  std_logic;
