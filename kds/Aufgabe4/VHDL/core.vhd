@@ -20,7 +20,6 @@ END core;
 ARCHITECTURE behavioral OF core IS
     CONSTANT BASE_ADDR_A:   integer := 16#0000#;
     CONSTANT BASE_ADDR_B:   integer := 16#0100#;
-    CONSTANT VECTOR_LEN:    integer := 256;
     CONSTANT MATRIX_DIM:    integer := 16;
 
     COMPONENT rom_block IS
@@ -66,11 +65,12 @@ ARCHITECTURE behavioral OF core IS
              wea:     IN  std_logic);
     END COMPONENT;
 
+    -- Component signals
     SIGNAL ram_addr_a:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ram_addr_b:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_input_a:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_input_b:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_output_b:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_enable:      std_logic := '0';
     SIGNAL ram_wenable:     std_logic := '0';
@@ -91,10 +91,20 @@ ARCHITECTURE behavioral OF core IS
     SIGNAL acc_input:       std_logic_vector(35 DOWNTO 0) := (OTHERS => '0');
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL current_elem:    integer := 0;
+    -- Stage control signals
+    SIGNAL rom_enable_ROM:      std_logic := '0';
+    SIGNAL acc_enable_ROM:      std_logic := '0';
+    SIGNAL acc_manualrst_ROM:   std_logic := '0';
+    SIGNAL ram_wenable_ROM:     std_logic := '0';
+    SIGNAL rdy_ROM:             std_logic := '0';
+    SIGNAL acc_enable_MUL:      std_logic := '0';
+    SIGNAL acc_manualrst_MUL:   std_logic := '0';
+    SIGNAL ram_wenable_MUL:     std_logic := '0';
+    SIGNAL rdy_MUL:             std_logic := '0';
+    SIGNAL ram_wenable_ACC:     std_logic := '0';
+    SIGNAL rdy_ACC:             std_logic := '0';
 
-    TYPE tstate IS (S0, S1, S2, S3, IDLE);
-    SIGNAL state: tstate := IDLE;
+    SIGNAL idle:                std_logic := '1';
 
 BEGIN
     u_romblock: rom_block
@@ -137,85 +147,106 @@ BEGIN
              dina => acc_output(15 DOWNTO 0),
              douta => OPEN,
              doutb => dout,
-             ena => '0',
+             ena => '1',
              enb => '1',
              wea => ram_wenable);
     ram_addr_b <= "00" & sw;
 
     main: PROCESS(clk, rst)
+        VARIABLE i: integer := 0;
+        VARIABLE j: integer := 0;
+        VARIABLE k: integer := 0;
+        VARIABLE addr_a: integer := BASE_ADDR_A;
+        VARIABLE addr_b: integer := BASE_ADDR_B;
     BEGIN
         IF rst = RSTDEF OR (clk'EVENT AND clk = '1' AND swrst = RSTDEF) THEN
-            ram_wenable <= '0';
             rom_enable <= '0';
             acc_enable <= '0';
+            ram_wenable <= '0';
 
+            idle <= '1';
             rdy <= '0';
-            state <= IDLE;
+
+            i := 0;
+            j := 0;
+            k := 0;
         ELSIF clk'EVENT AND clk = '1' THEN
             IF strt = '1' THEN
+                i := 0;
+                j := 0;
+                k := 1;
+                addr_a := BASE_ADDR_A;
+                addr_b := BASE_ADDR_B;
+
                 rom_enable <= '1';
-                rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A, rom_input_a'LENGTH));
-                rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B, rom_input_b'LENGTH));
+                rom_input_a <= std_logic_vector(to_unsigned(addr_a, rom_input_a'LENGTH));
+                rom_input_b <= std_logic_vector(to_unsigned(addr_b, rom_input_b'LENGTH));
                 acc_enable <= '0';
                 ram_wenable <= '0';
 
+                rom_enable_ROM <= '1';
+                acc_enable_ROM <= '1';
+
                 rdy <= '0';
-                current_elem <= 1;
-
-                state <= S0;
+                idle <= '0';
             ELSE
-                CASE state IS
-                    WHEN S0 =>
-                        -- Pipeline: ROM -> MUL -> ACC -> RAM
-                        rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, rom_input_a'LENGTH));
-                        rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, rom_input_b'LENGTH));
+                IF idle = '0' THEN
+                    -- @
+                    addr_a := BASE_ADDR_A + MATRIX_DIM*i + k;
+                    addr_b := BASE_ADDR_B + MATRIX_DIM*k + j;
+                    rom_input_a <= std_logic_vector(to_unsigned(addr_a, rom_input_a'LENGTH));
+                    rom_input_b <= std_logic_vector(to_unsigned(addr_b, rom_input_b'LENGTH));
 
-                        IF current_elem > 1 THEN
-                            acc_enable <= '1';
-                        END IF;
+                    IF k = MATRIX_DIM-1 THEN 
+                        acc_manualrst_ROM <= '1';
+                        ram_wenable_ROM <= '1';
+                        ram_addr_a <= std_logic_vector(to_unsigned(MATRIX_DIM*i + j, ram_addr_a'LENGTH));
+                    ELSE
+                        acc_manualrst_ROM <= '0';
+                        ram_wenable_ROM <= '0';
+                    END IF;
 
-                        -- The current element will be available to be written within 2 cycles
-                        IF (current_elem + 1) MOD (MATRIX_DIM + 2) = 0 THEN
-                            acc_manualrst <= '1';
-                            ram_addr_a <= std_logic_vector(to_unsigned((current_elem + 1) / (VECTOR_LEN - 2), ram_addr_a'LENGTH));
-                            ram_wenable <= '0';
-                        ELSIF (current_elem + 1) MOD (MATRIX_DIM + 2) = 1 THEN
-                            acc_manualrst <= '0';
-                            ram_wenable <= '1';
+                    IF k < MATRIX_DIM-1 THEN
+                        k := k + 1;
+                    ELSE
+                        k := 0;
+                        IF j < MATRIX_DIM-1 THEN
+                            j := j + 1;
                         ELSE
-                            acc_manualrst <= '0';
-                            ram_wenable <= '0';
+                            j := 0;
+                            IF i < MATRIX_DIM-1 THEN
+                                i := i + 1;
+                            ELSE
+                                -- Last element
+                                rom_enable_ROM <= '0';
+                                --acc_enable_ROM <= '0';
+                                rdy_ROM <= '1';
+                                idle <= '1';
+                            END IF;
                         END IF;
+                    END IF;
+                ELSE
+                    acc_enable_ROM <= '0';
+                    ram_wenable_ROM <= '0';
+                END IF;
 
-                        IF current_elem < VECTOR_LEN THEN
-                            current_elem <= current_elem + 1;
-                        ELSE
-                            rom_enable <= '0';
-                            state <= S1;
-                        END IF;
-                    WHEN S1 =>
-                        -- MUL -> ACC -> RAM
-                        acc_enable <= '1';
-                        ram_wenable <= '0';
+                -- ROM
+                rom_enable <= rom_enable_ROM;
+                acc_enable_MUL <= acc_enable_ROM;
+                acc_enable <= acc_enable_ROM;
+                acc_manualrst_MUL <= acc_manualrst_ROM;
+                ram_wenable_MUL <= ram_wenable_ROM;
+                rdy_MUL <= rdy_ROM;
 
-                        state <= S2;
-                    WHEN S2 =>
-                        -- ACC -> RAM
-                        acc_enable <= '0';
-                        ram_wenable <= '0';
+                -- MUL
+                acc_enable <= acc_enable_MUL;
+                acc_manualrst <= acc_manualrst_MUL;
+                ram_wenable_ACC <= ram_wenable_MUL;
+                rdy_ACC <= rdy_MUL;
 
-                        state <= S3;
-                    WHEN S3 =>
-                        -- RAM
-                        acc_enable <= '0';
-                        ram_addr_a <= std_logic_vector(to_unsigned(VECTOR_LEN - 1, ram_addr_a'LENGTH));
-                        ram_wenable <= '1';
-
-                        rdy <= '1';
-
-                        state <= IDLE;
-                    WHEN IDLE =>
-                END CASE;
+                -- ACC
+                ram_wenable <= ram_wenable_ACC;
+                rdy <= rdy_ACC;
             END IF;
         END IF;
     END PROCESS;
