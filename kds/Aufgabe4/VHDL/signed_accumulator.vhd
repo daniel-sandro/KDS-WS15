@@ -18,13 +18,15 @@ ARCHITECTURE behavioral OF signed_accumulator IS
 BEGIN
     main: PROCESS(rst, clk)
     BEGIN
-        IF rst = RSTDEF AND clk'EVENT AND clk = '1' THEN
-            -- workaround to save 1 cycle
-            acc <= zero;
-            dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
-        ELSIF clk'EVENT AND clk = '1' THEN
-            acc <= acc + signed(din);
-            dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
+        IF clk'EVENT AND clk = '1' THEN
+            IF rst = RSTDEF THEN
+                -- workaround to save 1 cycle
+                acc <= zero;
+                dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
+            ELSE
+                acc <= acc + signed(din);
+                dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
+            END IF;
         END IF;
     END PROCESS;
 END behavioral;

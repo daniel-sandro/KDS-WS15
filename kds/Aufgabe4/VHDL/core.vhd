@@ -66,15 +66,6 @@ ARCHITECTURE behavioral OF core IS
     END COMPONENT;
 
     -- Component signals
-    SIGNAL ram_addr_a:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL ram_addr_b:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ram_input_a:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ram_input_b:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ram_output_b:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ram_enable:      std_logic := '0';
-    SIGNAL ram_wenable:     std_logic := '0';
-
     SIGNAL rom_input_a:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     SIGNAL rom_input_b:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     SIGNAL rom_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
@@ -90,6 +81,16 @@ ARCHITECTURE behavioral OF core IS
     SIGNAL acc_manualrst:   std_logic := '0';
     SIGNAL acc_input:       std_logic_vector(35 DOWNTO 0) := (OTHERS => '0');
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0) := (OTHERS => '0');
+
+    SIGNAL ram_addr_a:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL ram_addr_b:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_input_a:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_input_b:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_output_b:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
+    --SIGNAL ram_enable:      std_logic := '0';
+    SIGNAL ram_wenable:     std_logic := '0';
+
 
     -- Stage control signals
     SIGNAL rom_enable_ROM:      std_logic := '0';
@@ -143,7 +144,6 @@ BEGIN
              addrb => ram_addr_b,
              clka => clk,
              clkb => clk,
-             -- TODO: check
              dina => acc_output(15 DOWNTO 0),
              douta => OPEN,
              doutb => dout,
@@ -159,94 +159,104 @@ BEGIN
         VARIABLE addr_a: integer := BASE_ADDR_A;
         VARIABLE addr_b: integer := BASE_ADDR_B;
     BEGIN
-        IF rst = RSTDEF OR (clk'EVENT AND clk = '1' AND swrst = RSTDEF) THEN
-            rom_enable <= '0';
-            acc_enable <= '0';
-            ram_wenable <= '0';
-
-            idle <= '1';
-            rdy <= '0';
-
-            i := 0;
-            j := 0;
-            k := 0;
-        ELSIF clk'EVENT AND clk = '1' THEN
-            IF strt = '1' THEN
-                i := 0;
-                j := 0;
-                k := 1;
-                addr_a := BASE_ADDR_A;
-                addr_b := BASE_ADDR_B;
-
-                rom_enable <= '1';
-                rom_input_a <= std_logic_vector(to_unsigned(addr_a, rom_input_a'LENGTH));
-                rom_input_b <= std_logic_vector(to_unsigned(addr_b, rom_input_b'LENGTH));
+        IF clk'EVENT AND clk = '1' THEN
+            IF rst = RSTDEF OR swrst = RSTDEF THEN
+                rom_enable <= '0';
                 acc_enable <= '0';
                 ram_wenable <= '0';
 
-                rom_enable_ROM <= '1';
-                acc_enable_ROM <= '1';
-
+                idle <= '1';
                 rdy <= '0';
-                idle <= '0';
+
+                i := 0;
+                j := 0;
+                k := 0;
             ELSE
-                IF idle = '0' THEN
-                    -- @
-                    addr_a := BASE_ADDR_A + MATRIX_DIM*i + k;
-                    addr_b := BASE_ADDR_B + MATRIX_DIM*k + j;
+                IF strt = '1' THEN
+                    i := 0;
+                    j := 0;
+                    k := 1;
+                    addr_a := BASE_ADDR_A;
+                    addr_b := BASE_ADDR_B;
+
+                    rom_enable <= '1';
                     rom_input_a <= std_logic_vector(to_unsigned(addr_a, rom_input_a'LENGTH));
                     rom_input_b <= std_logic_vector(to_unsigned(addr_b, rom_input_b'LENGTH));
+                    acc_enable <= '0';
+                    ram_wenable <= '0';
 
-                    IF k = MATRIX_DIM-1 THEN 
-                        acc_manualrst_ROM <= '1';
-                        ram_wenable_ROM <= '1';
-                        ram_addr_a <= std_logic_vector(to_unsigned(MATRIX_DIM*i + j, ram_addr_a'LENGTH));
+                    rom_enable_ROM <= '1';
+                    acc_enable_ROM <= '1';
+                    acc_manualrst_ROM <= '0';
+                    ram_wenable_ROM <= '0';
+                    rdy_ROM <= '0';
+                    acc_enable_MUL <= '0';
+                    acc_manualrst_MUL <= '0';
+                    ram_wenable_MUL <= '0';
+                    rdy_MUL <= '0';
+                    ram_wenable_ACC <= '0';
+                    rdy_ACC <= '0';
+
+                    rdy <= '0';
+                    idle <= '0';
+                ELSE
+                    IF idle = '0' THEN
+                        -- @
+                        addr_a := BASE_ADDR_A + MATRIX_DIM*i + k;
+                        addr_b := BASE_ADDR_B + MATRIX_DIM*k + j;
+                        rom_input_a <= std_logic_vector(to_unsigned(addr_a, rom_input_a'LENGTH));
+                        rom_input_b <= std_logic_vector(to_unsigned(addr_b, rom_input_b'LENGTH));
+
+                        IF k = MATRIX_DIM-1 THEN 
+                            acc_manualrst_ROM <= '1';
+                            ram_wenable_ROM <= '1';
+                            ram_addr_a <= std_logic_vector(to_unsigned(MATRIX_DIM*i + j, ram_addr_a'LENGTH));
+                        ELSE
+                            acc_manualrst_ROM <= '0';
+                            ram_wenable_ROM <= '0';
+                        END IF;
+
+                        IF k < MATRIX_DIM-1 THEN
+                            k := k + 1;
+                        ELSE
+                            k := 0;
+                            IF j < MATRIX_DIM-1 THEN
+                                j := j + 1;
+                            ELSE
+                                j := 0;
+                                IF i < MATRIX_DIM-1 THEN
+                                    i := i + 1;
+                                ELSE
+                                    -- Last element
+                                    rom_enable_ROM <= '0';
+                                    rdy_ROM <= '1';
+                                    idle <= '1';
+                                END IF;
+                            END IF;
+                        END IF;
                     ELSE
-                        acc_manualrst_ROM <= '0';
+                        acc_enable_ROM <= '0';
                         ram_wenable_ROM <= '0';
                     END IF;
 
-                    IF k < MATRIX_DIM-1 THEN
-                        k := k + 1;
-                    ELSE
-                        k := 0;
-                        IF j < MATRIX_DIM-1 THEN
-                            j := j + 1;
-                        ELSE
-                            j := 0;
-                            IF i < MATRIX_DIM-1 THEN
-                                i := i + 1;
-                            ELSE
-                                -- Last element
-                                rom_enable_ROM <= '0';
-                                --acc_enable_ROM <= '0';
-                                rdy_ROM <= '1';
-                                idle <= '1';
-                            END IF;
-                        END IF;
-                    END IF;
-                ELSE
-                    acc_enable_ROM <= '0';
-                    ram_wenable_ROM <= '0';
+                    -- ROM
+                    rom_enable <= rom_enable_ROM;
+                    acc_enable_MUL <= acc_enable_ROM;
+                    acc_enable <= acc_enable_ROM;
+                    acc_manualrst_MUL <= acc_manualrst_ROM;
+                    ram_wenable_MUL <= ram_wenable_ROM;
+                    rdy_MUL <= rdy_ROM;
+
+                    -- MUL
+                    acc_enable <= acc_enable_MUL;
+                    acc_manualrst <= acc_manualrst_MUL;
+                    ram_wenable_ACC <= ram_wenable_MUL;
+                    rdy_ACC <= rdy_MUL;
+
+                    -- ACC
+                    ram_wenable <= ram_wenable_ACC;
+                    rdy <= rdy_ACC;
                 END IF;
-
-                -- ROM
-                rom_enable <= rom_enable_ROM;
-                acc_enable_MUL <= acc_enable_ROM;
-                acc_enable <= acc_enable_ROM;
-                acc_manualrst_MUL <= acc_manualrst_ROM;
-                ram_wenable_MUL <= ram_wenable_ROM;
-                rdy_MUL <= rdy_ROM;
-
-                -- MUL
-                acc_enable <= acc_enable_MUL;
-                acc_manualrst <= acc_manualrst_MUL;
-                ram_wenable_ACC <= ram_wenable_MUL;
-                rdy_ACC <= rdy_MUL;
-
-                -- ACC
-                ram_wenable <= ram_wenable_ACC;
-                rdy <= rdy_ACC;
             END IF;
         END IF;
     END PROCESS;
