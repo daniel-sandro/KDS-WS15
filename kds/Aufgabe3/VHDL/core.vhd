@@ -150,6 +150,7 @@ BEGIN
                         state <= S3;
                     WHEN S3 =>
                         -- MUL -> ACC -> res
+                        acc_enable <= '0';
                         done <= '1';
 
                         state <= IDLE;
