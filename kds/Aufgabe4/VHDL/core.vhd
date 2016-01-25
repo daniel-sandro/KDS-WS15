@@ -1,6 +1,8 @@
-
 LIBRARY ieee;
+LIBRARY unisim;
 USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+USE unisim.vcomponents.ALL;
 
 ENTITY core IS
    GENERIC(RSTDEF: std_logic := '0');
@@ -20,17 +22,15 @@ ARCHITECTURE behavioral OF core IS
     CONSTANT BASE_ADDR_B:   integer := 16#0100#;
     CONSTANT VECTOR_LEN:    integer := 256;
 
-    COMPONENT ram_block IS
-        PORT(addra:   IN  std_logic_vector(9 DOWNTO 0);
-             addrb:   IN  std_logic_vector(9 DOWNTO 0);
-             clka:    IN  std_logic;
-             clkb:    IN  std_logic;
-             dina:    IN  std_logic_vector(15 DOWNTO 0);
-             douta:   OUT std_logic_vector(15 DOWNTO 0);
-             doutb:   OUT std_logic_vector(15 DOWNTO 0);
-             ena:     IN  std_logic;
-             enb:     IN  std_logic;
-             wea:     IN  std_logic);
+    COMPONENT rom_block IS
+        PORT(addra: IN std_logic_vector(9 DOWNTO 0);
+             addrb: IN std_logic_vector(9 DOWNTO 0);
+             clka:  IN std_logic;
+             clkb:  IN std_logic;
+             douta: OUT std_logic_vector(15 DOWNTO 0);
+             doutb: OUT std_logic_vector(15 DOWNTO 0);
+             ena:   IN std_logic;
+             enb:   IN std_logic);
     END COMPONENT;
 
     COMPONENT MULT18X18S IS
@@ -52,7 +52,21 @@ ARCHITECTURE behavioral OF core IS
              dout:  OUT std_logic_vector(OUTPUT_LEN-1 DOWNTO 0));
     END COMPONENT;
 
-    SIGNAL ram_addr_a:      std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
+    COMPONENT ram_block IS
+        PORT(addra:   IN  std_logic_vector(9 DOWNTO 0);
+             addrb:   IN  std_logic_vector(9 DOWNTO 0);
+             clka:    IN  std_logic;
+             clkb:    IN  std_logic;
+             dina:    IN  std_logic_vector(15 DOWNTO 0);
+             douta:   OUT std_logic_vector(15 DOWNTO 0);
+             doutb:   OUT std_logic_vector(15 DOWNTO 0);
+             ena:     IN  std_logic;
+             enb:     IN  std_logic;
+             wea:     IN  std_logic);
+    END COMPONENT;
+
+    SIGNAL ram_addr_a:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL ram_addr_b:      std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_input_a:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     --SIGNAL ram_input_b:     std_logic_vector(9 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ram_output_a:    std_logic_vector(15 DOWNTO 0) := (OTHERS => '0');
@@ -75,7 +89,6 @@ ARCHITECTURE behavioral OF core IS
     SIGNAL acc_input:       std_logic_vector(35 DOWNTO 0) := (OTHERS => '0');
     SIGNAL acc_output:      std_logic_vector(43 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL vector_len:      integer := 0;
     SIGNAL current_elem:    integer := 0;
 
     TYPE tstate IS (S0, S1, S2, S3, IDLE);
@@ -104,23 +117,27 @@ BEGIN
     GENERIC MAP(RSTDEF => RSTDEF,
                 INPUT_LEN => 36,
                 OUTPUT_LEN => 44)
-    PORT MAP(rst => rst OR strt OR acc_rst,
+    PORT MAP(rst => acc_rst,
              clk => clk,
              din => acc_input,
              dout => acc_output);
+    --acc_rst <= rst OR (clk'EVENT AND clk = '1' AND swrst) OR strt;
+    acc_rst <= rst OR strt;
     acc_input <= mult_output WHEN acc_enable = '1' ELSE (OTHERS => '0');
 
     u_ramblock: ram_block
     PORT MAP(addra => ram_addr_a,
-             addrb => "00" & sw,
+             addrb => ram_addr_b,
              clka => clk,
              clkb => clk,
-             dina => acc_output,
+             -- TODO: check
+             dina => acc_output(15 DOWNTO 0),
              douta => OPEN,
              doutb => dout,
              ena => '0',
              enb => '1',
              wea => ram_wenable);
+    ram_addr_b <= "00" & sw;
 
     main: PROCESS(clk, rst)
     BEGIN
@@ -134,8 +151,8 @@ BEGIN
         ELSIF clk'EVENT AND clk = '1' THEN
             IF strt = '1' THEN
                 rom_enable <= '1';
-                rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A));
-                rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B));
+                rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A, rom_input_a'LENGTH));
+                rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B, rom_input_b'LENGTH));
                 acc_enable <= '0';
                 ram_wenable <= '0';
 
@@ -147,8 +164,8 @@ BEGIN
                 CASE state IS
                     WHEN S0 =>
                         -- Pipeline: ROM -> MUL -> ACC -> RAM
-                        rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem), rom_input_a'LENGTH);
-                        rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem), rom_input_b'LENGTH);
+                        rom_input_a <= std_logic_vector(to_unsigned(BASE_ADDR_A + current_elem, rom_input_a'LENGTH));
+                        rom_input_b <= std_logic_vector(to_unsigned(BASE_ADDR_B + current_elem, rom_input_b'LENGTH));
 
                         IF current_elem > 1 THEN
                             acc_enable <= '1';
@@ -156,7 +173,7 @@ BEGIN
 
                         -- The current element will be available to be written within 2 cycles
                         IF (current_elem + 1) MOD (VECTOR_LEN - 2) = 0 THEN
-                            ram_addr_a <= std_logic_vector(to_unsigned((current_elem + 1) / (VECTOR_LEN - 2)));
+                            ram_addr_a <= std_logic_vector(to_unsigned((current_elem + 1) / (VECTOR_LEN - 2), ram_addr_a'LENGTH));
                             ram_wenable <= '1';
                         ELSE
                             ram_wenable <= '0';
@@ -183,7 +200,7 @@ BEGIN
                     WHEN S3 =>
                         -- RAM
                         acc_enable <= '0';
-                        ram_addr_a <= std_logic_vector(to_unsigned(VECTOR_LEN - 1));
+                        ram_addr_a <= std_logic_vector(to_unsigned(VECTOR_LEN - 1, ram_addr_a'LENGTH));
                         ram_wenable <= '1';
 
                         rdy <= '1';
@@ -195,4 +212,4 @@ BEGIN
         END IF;
     END PROCESS;
 
-END 
+END behavioral;
