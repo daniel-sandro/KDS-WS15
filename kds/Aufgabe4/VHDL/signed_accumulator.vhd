@@ -19,9 +19,9 @@ BEGIN
     main: PROCESS(rst, clk)
     BEGIN
         IF rst = RSTDEF AND clk'EVENT AND clk = '1' THEN
-            -- workaround
-            acc <= zero + signed(din);
-            dout <= conv_std_logic_vector(signed(din), OUTPUT_LEN);
+            -- workaround to save 1 cycle
+            acc <= zero;
+            dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
         ELSIF clk'EVENT AND clk = '1' THEN
             acc <= acc + signed(din);
             dout <= conv_std_logic_vector(acc + signed(din), OUTPUT_LEN);
