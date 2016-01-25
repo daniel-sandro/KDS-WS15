@@ -165,6 +165,18 @@ BEGIN
                 acc_enable <= '0';
                 ram_wenable <= '0';
 
+                rom_enable_ROM <= '0';
+                acc_enable_ROM <= '0';
+                acc_manualrst_ROM <= '0';
+                ram_wenable_ROM <= '0';
+                rdy_ROM <= '0';
+                acc_enable_MUL <= '0';
+                acc_manualrst_MUL <= '0';
+                ram_wenable_MUL <= '0';
+                rdy_MUL <= '0';
+                ram_wenable_ACC <= '0';
+                rdy_ACC <= '0';
+
                 idle <= '1';
                 rdy <= '0';
 
